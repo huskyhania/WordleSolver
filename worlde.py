@@ -10,6 +10,7 @@ app = Flask(__name__)
 @app.route("/", methods=["GET", "POST"])
 def index():
     winner = False
+    error_message = ""
     if os.path.exists("temp"):
         with open("temp", "r") as f:
             word_list = [line.strip() for line in f]
@@ -45,16 +46,21 @@ def index():
         for i, letter in enumerate(yellow):
             if letter != "0":
                 filtered = [word for word in filtered if letter in word and word[i] != letter]
+        # result = " | ".join(filtered)
+        if len(filtered) == 1:
+            winner = True 
+            if os.path.exists("temp"):
+                os.remove("temp")
+                return render_template("index.html", result=filtered[0], winner=winner, error_message=error_message)
+        elif len(filtered) == 0:
+            error_message = "No words found with the given criteria. Please check your inputs."
+            os.remove("temp")
+            return render_template("index.html", result=result, winner=winner, error_message=error_message)
         result = " | ".join(filtered)
         with open("temp", "w") as f:
             for word in filtered:
                 f.write(word + "\n")
-        if len(filtered) <= 1:
-            winner = True 
-            if os.path.exists("temp"):
-                os.remove("temp")
-
-    return render_template("index.html", result=result, winner=winner)
+    return render_template("index.html", result=result, winner=winner, error_message=error_message)
 
 if __name__ == "__main__":
     app.run(debug=True)

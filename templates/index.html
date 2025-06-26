@@ -26,9 +26,12 @@
         <label>Grey (letters not in word at all):</label><br>
         <input type="text" name="grey" placeholder="brshln"><br><br>
 
-        <button type="submit">Submit</button>
+        <button type="submit" value="start">Submit</button>
+        <button type="reset">Reset</button>
     </form>
-
+     {% if error_message %}
+        <div class="error">{{ error_message }}</div>
+    {% endif %}
     {% if winner %}
         <div style="color: green; font-weight: bold; margin-top: 20px;">
             🎉 Congratulations! The word is: {{ result }} 🎉
