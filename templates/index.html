@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Wordle Solver</title>
+</head>
+<body>
+    <h1>Wordle Solver</h1>
+    <form method="POST">
+        <label>Green letters (e.g. 0e0l0):</label><br>
+        <input type="text" name="green"><br><br>
+
+        <label>Yellow letters (e.g. 00l00):</label><br>
+        <input type="text" name="yellow"><br><br>
+
+        <label>Grey letters (e.g. abcdf):</label><br>
+        <input type="text" name="grey"><br><br>
+
+        <input type="submit" value="Solve">
+    </form>
+
+    {% if result %}
+        <h2>Possible Words:</h2>
+        <p>{{ result }}</p>
+    {% endif %}
+</body>
+</html>

@@ -1,48 +1,39 @@
+from flask import Flask, render_template, request
+import os
 
+app = Flask(__name__)
 
-try:
-	with open("wordle-La.txt", "r") as wordList:
-		words = [line.strip() for line in wordList]
+# with open("wordle-La.txt") as f:
+#     word_list = [line.strip() for line in f]
 
-	# print("Possible guesses: ")
-	# for word in words:
-	# 	print(word)
+@app.route("/", methods=["GET", "POST"])
+def index():
+    if os.path.exists("temp"):
+        with open("temp", "r") as f:
+            word_list = [line.strip() for line in f]
+    else:
+        with open("wordle-La.txt") as f:
+            word_list = [line.strip() for line in f]
+    result = ""
 
-except FileNotFoundError:
-	print("Error: Word list not found.")
+    if request.method == "POST":
+        green = request.form.get("green", "").strip().lower()
+        yellow = request.form.get("yellow", "").strip().lower()
+        grey = request.form.get("grey", "").strip().lower()
+        filtered = [word for word in word_list if all(letter not in word for letter in grey)]
+        for i, letter in enumerate(green):
+            if letter != "0":
+                filtered = [word for word in filtered if word[i] == letter]
+        for i, letter in enumerate(yellow):
+            if letter != "0":
+                filtered = [word for word in filtered if letter in word and word[i] != letter]
 
-except PermissionError:
-	print("Error: No permissions to open the Word List.")
+        result = " | ".join(filtered)
+        with open("temp", "w") as f:
+            for word in filtered:
+                f.write(word + "\n")
 
-except Exception as e:
-	print(f"Unexpected error: {e}")
+    return render_template("index.html", result=result)
 
-while (1):
-	print("Green letters")
-	green = input().strip().lower() #Green Typecasted to string
-	print("Yellow letters")
-	yellow = input().strip().lower() #Yellow Typecasted to string
-	print("Grey letters")
-	grey = input().strip().lower() #Gray Typecasted to string
-
-	answer = "hello"
-
-	print("--Input--")
-	print(green)
-	print(yellow)
-	print(grey)
-
-	if input == answer:
-		print("Congratulations!")
-	else:
-		filtered = [word for word in words if all(letter not in word for letter in grey)]
-		# filtered = [word for word in words if all(letter not in word[2] for letter in green)]
-		for i, letter in enumerate(green):
-			if letter != "0":
-				filtered = [word for word in filtered if word[i] == letter]
-		for i, letter in enumerate(yellow):
-			if letter != "0":
-				filtered = [word for word in filtered if letter in word and word[i] != letter]
-		print("Possible guesses: ")
-		print(" | ".join(filtered))
-		words = filtered
+if __name__ == "__main__":
+    app.run(debug=True)
