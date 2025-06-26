@@ -27,7 +27,9 @@
         <input type="text" name="grey" placeholder="brshln"><br><br>
 
         <button type="submit" value="start">Submit</button>
-        <button type="reset">Reset</button>
+    </form>
+    <form method="POST" action="{{ url_for('reset') }}" style="display:inline;">
+        <button type="submit">Reset</button>
     </form>
      {% if error_message %}
         <div class="error">{{ error_message }}</div>

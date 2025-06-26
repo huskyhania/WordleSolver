@@ -1,7 +1,6 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, url_for, redirect
 import os
 import atexit
-
 app = Flask(__name__)
 
 # with open("wordle-La.txt") as f:
@@ -61,6 +60,12 @@ def index():
             for word in filtered:
                 f.write(word + "\n")
     return render_template("index.html", result=result, winner=winner, error_message=error_message)
+
+@app.route("/reset", methods=["POST"])
+def reset():
+    if os.path.exists("temp"):
+        os.remove("temp")
+    return redirect(url_for("index"))
 
 if __name__ == "__main__":
     app.run(debug=True)
