@@ -19,11 +19,11 @@ except Exception as e:
 
 while (1):
 	print("Green letters")
-	green = str(input()) #Green Typecasted to string
+	green = input().strip().lower() #Green Typecasted to string
 	print("Yellow letters")
-	yellow = str(input()) #Yellow Typecasted to string
+	yellow = input().strip().lower() #Yellow Typecasted to string
 	print("Grey letters")
-	grey = str(input()) #Gray Typecasted to string
+	grey = input().strip().lower() #Gray Typecasted to string
 
 	answer = "hello"
 
@@ -31,11 +31,6 @@ while (1):
 	print(green)
 	print(yellow)
 	print(grey)
-
-	#Call solver function
-	# ft_solver(green,yellow,grey)
-
-
 
 	if input == answer:
 		print("Congratulations!")
