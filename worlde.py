@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 import os
+import atexit
 
 app = Flask(__name__)
 
@@ -8,6 +9,7 @@ app = Flask(__name__)
 
 @app.route("/", methods=["GET", "POST"])
 def index():
+    winner = False
     if os.path.exists("temp"):
         with open("temp", "r") as f:
             word_list = [line.strip() for line in f]
@@ -32,8 +34,12 @@ def index():
         with open("temp", "w") as f:
             for word in filtered:
                 f.write(word + "\n")
+        if len(filtered) <= 1:
+            winner = True 
+            if os.path.exists("temp"):
+                os.remove("temp")
 
-    return render_template("index.html", result=result)
+    return render_template("index.html", result=result, winner=winner)
 
 if __name__ == "__main__":
     app.run(debug=True)
