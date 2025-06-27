@@ -31,7 +31,12 @@
     <form method="POST" action="{{ url_for('reset') }}" style="display:inline;">
         <button type="submit">Reset</button>
     </form>
-     {% if error_message %}
+    {% if word_list_str %}
+        <div>
+            <p><strong>All Words: </strong>{{ word_list_str }}</p>
+        </div>
+    {% endif %}
+    {% if error_message %}
         <div class="error">{{ error_message }}</div>
     {% endif %}
     {% if winner %}
