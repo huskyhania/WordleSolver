@@ -1,4 +1,14 @@
 import random
+import tkinter as tk
+
+root = tk.Tk()
+
+# Setting some window properties
+root.title("Tk Example")
+root.configure(background="white")
+root.minsize(1200, 1200)
+root.maxsize(1500, 1500)
+root.geometry("300x300+50+50")
 
 try:
 	with open("wordle-La.txt", "r") as wordList:
@@ -16,12 +26,17 @@ except Exception as e:
 safe = list("00000")
 #Picks random word that the game tries to guess
 correct = random.choice(words)
+label = tk.Label(root, text=correct, fg="white",
+    bg="black",
+    width=10,
+    height=10).pack()
 tries = 0
-while (1):
+while(1):
 	tries += 1
 	print(f"this is my {tries} try")
 	#Random word that the game thinks is the correct word
 	random_guess = random.choice(words)
+	tk.Label(root, text=random_guess).pack()
 	# print("give your word")
 	# random_guess = input()
 	print(correct)
@@ -39,7 +54,6 @@ while (1):
 	if green == correct:
 		print(f"you win {green}")
 		break
-
 	#yellow
 	yellow_str = ["0"] * 5
 	for i in range(5):
@@ -91,3 +105,5 @@ while (1):
 	print(" | ".join(filtered))
 
 	words = filtered
+	root.mainloop()
+root.bind("<Key>", handle_keypress)
