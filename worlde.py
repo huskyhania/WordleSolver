@@ -94,7 +94,8 @@ def index():
                 return render_template("index.html", result=filtered[0], winner=winner, error_message=error_message)
         elif len(filtered) == 0:
             error_message = "No words found with the given criteria. Please check your inputs."
-            os.remove("temp")
+            if os.path.exists("temp"):
+                os.remove("temp")
             if os.path.exists(GREEN_STATE_FILE):
                 os.remove(GREEN_STATE_FILE)
             return render_template("index.html", result=result, winner=winner, error_message=error_message)
