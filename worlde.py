@@ -30,7 +30,7 @@ def index():
             word_list_str = " | ".join(word_list)
     result = ""
     if request.method == "POST":
-        #join green letters
+
         green_letters = []
         for i in range(1, 6):
             letterg = request.form.get(f"green{i}", "").strip().lower()
@@ -38,7 +38,7 @@ def index():
                 letterg = "0"
             green_letters.append(letterg)
         green = ''.join(green_letters)
-        #print(green)
+
         saved_green = load_green_state()
         updated_green = ''.join(
             green[i] if green[i] != "0" else saved_green[i]
