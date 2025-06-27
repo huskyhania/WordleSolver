@@ -1,11 +1,8 @@
+import random
+
 try:
 	with open("wordle-La.txt", "r") as wordList:
 		words = [line.strip() for line in wordList]
-
-	# print("Possible guesses: ")
-	# for word in words:
-	# 	print(word)
-
 except FileNotFoundError:
 	print("Error: Word list not found.")
 
@@ -17,16 +14,49 @@ except Exception as e:
 
 
 safe = list("00000")
+#Picks random word that the game tries to guess
+correct = random.choice(words)
+tries = 0
 while (1):
-	print("\nGreen letters (e.g., 0a0c0):")
-	green = input().strip().lower()
+	tries += 1
+	print(f"this is my {tries} try")
+	#Random word that the game thinks is the correct word
+	random_guess = random.choice(words)
+	# print("give your word")
+	# random_guess = input()
+	print(correct)
+	print(random_guess)
 
-	print("Yellow letters (e.g., 00b00):")
-	yellow = input().strip().lower()
+	#green
+	green_str = ["0"] * 5
+	for i in range(5):
+		if correct[i] == random_guess[i]:
+			green_str[i] = random_guess[i]
+	green = "".join(green_str)
+	print("Green str")
+	print(green)
 
-	print("Grey letters (e.g., xyz):")
-	grey = input().strip().lower()
-	
+	if green == correct:
+		print(f"you win {green}")
+		break
+
+	#yellow
+	yellow_str = ["0"] * 5
+	for i in range(5):
+		for x in range(5):
+			if correct[i] == random_guess[x] and random_guess[x] != green_str[x]:
+				yellow_str[x] = random_guess[x]
+	yellow = "".join(yellow_str)
+	print("Yellow str")
+	print(yellow)
+
+	#grey
+	grey = ""
+	for ch in random_guess:
+		if ch not in correct:
+       			grey += ch
+	print(grey)
+
 	for i, letter in enumerate(green):
 		if letter != '0':
 			safe[i] = letter
@@ -54,7 +84,9 @@ while (1):
 		return True
 
 	filtered = [word for word in filtered if is_valid(word)]
-
+	if len(filtered) == 0:
+		print("There is no such word in english language. There are no possible guesses left.")
+		break
 	print("\nPossible guesses:")
 	print(" | ".join(filtered))
 
