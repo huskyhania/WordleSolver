@@ -33,7 +33,7 @@ except Exception as e:
     words = []
 
 safe = list("00000")
-correct = random.choice(words) if words else "crane"  # fallback word
+correct = random.choice(words)
 tries = 0
 print_grey = ""
 

@@ -1,10 +1,9 @@
 from flask import Flask, render_template, request, url_for, redirect
+from collections import Counter
 import os
 import atexit
+import random
 app = Flask(__name__)
-
-# with open("wordle-La.txt") as f:
-#     word_list = [line.strip() for line in f]
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -25,9 +24,11 @@ def index():
     if os.path.exists("temp"):
         with open("temp", "r") as f:
             word_list = [line.strip() for line in f]
+            word_list_str = ""
     else:
         with open("wordle-La.txt") as f:
             word_list = [line.strip() for line in f]
+            word_list_str = " | ".join(word_list)
     result = ""
     if request.method == "POST":
         #join green letters
@@ -45,7 +46,6 @@ def index():
             for i in range(5)
         )
         save_green_state(updated_green)
-        #join yellow letters
         yellow_letters = []
         for i in range(1, 6):
             lettery = request.form.get(f"yellow{i}", "").strip().lower()
@@ -53,31 +53,39 @@ def index():
                 lettery = "0"
             yellow_letters.append(lettery)
         yellow = ''.join(yellow_letters)
-        #print(yellow)
-        #start checking
+
         grey = request.form.get("grey", "").strip().lower()
-        #HERE FILTER
-        #filtered = [word for word in word_list if all(letter not in word for letter in grey)]
+        #FILTERING
+        required_counts = Counter([c for c in updated_green if c != '0'])
+        required_counts.update([c for c in yellow if c != '0'])
         filtered = []
         for word in word_list:
-            exclude = False
-            for letter in grey:
-                for i, char in enumerate(word):
-                    if char == letter and updated_green[i] != letter:
-                        exclude = True
-                        break
-                if exclude:
+            #Checks how many times a letter appears in the current word
+            word_counter = Counter(word)
+
+            too_many_grey = False
+            for g in grey:
+                allowed = required_counts.get(g, 0)
+                if word_counter[g] > allowed:
+                    too_many_grey = True
                     break
-            if not exclude:
-                filtered.append(word)
-        
-        for i, letter in enumerate(green):
-            if letter != "0":
-                filtered = [word for word in filtered if word[i] == letter]
-        for i, letter in enumerate(yellow):
-            if letter != "0":
-                filtered = [word for word in filtered if letter in word and word[i] != letter]
-        # result = " | ".join(filtered)
+            if too_many_grey:
+                continue
+
+            if not all(g == '0' or word[i] == g for i, g in enumerate(updated_green)):
+                continue
+
+            valid_yellow = True
+            for i, y in enumerate(yellow):
+                if y != '0':
+                    if y not in word or word[i] == y:
+                        valid_yellow = False
+                        break
+            if not valid_yellow:
+                continue
+
+            filtered.append(word)
+
         if len(filtered) == 1:
             winner = True 
             if os.path.exists("temp"):
@@ -87,15 +95,23 @@ def index():
                 return render_template("index.html", result=filtered[0], winner=winner, error_message=error_message)
         elif len(filtered) == 0:
             error_message = "No words found with the given criteria. Please check your inputs."
-            os.remove("temp")
+            if os.path.exists("temp"):
+                os.remove("temp")
             if os.path.exists(GREEN_STATE_FILE):
                 os.remove(GREEN_STATE_FILE)
             return render_template("index.html", result=result, winner=winner, error_message=error_message)
-        result = " | ".join(filtered)
+        #ultra optimization
+        result = random.choice(filtered)
+        for word in filtered:  
+            if len(set(word)) == len(word):
+                result = word
+                if "e" in result:
+                    break
+        word_list_str = ""
         with open("temp", "w") as f:
             for word in filtered:
                 f.write(word + "\n")
-    return render_template("index.html", result=result, winner=winner, error_message=error_message)
+    return render_template("index.html", result=result, winner=winner, error_message=error_message, word_list_str=word_list_str)
 
 @app.route("/reset", methods=["POST"])
 def reset():

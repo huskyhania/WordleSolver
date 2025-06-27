@@ -1,0 +1,50 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wordle Player</title>
+</head>
+<body>
+    <h1>Wordle Player</h1>
+    <form method="POST">
+        <label>Green letters:</label><br>
+        <input type="text" name="green1" maxlength="1" size="1" value="">
+        <input type="text" name="green2" maxlength="1" size="1" value="">
+        <input type="text" name="green3" maxlength="1" size="1" value="">
+        <input type="text" name="green4" maxlength="1" size="1" value="">
+        <input type="text" name="green5" maxlength="1" size="1" value=""><br><br>
+
+        <label>Yellow letters:</label><br>
+        <input type="text" name="yellow1" maxlength="1" size="1" value="">
+        <input type="text" name="yellow2" maxlength="1" size="1" value="">
+        <input type="text" name="yellow3" maxlength="1" size="1" value="">
+        <input type="text" name="yellow4" maxlength="1" size="1" value="">
+        <input type="text" name="yellow5" maxlength="1" size="1" value=""><br><br>
+
+        <label>Grey (letters not in word at all):</label><br>
+        <input type="text" name="grey" placeholder="brshln"><br><br>
+
+        <button type="submit" value="start">Submit</button>
+    </form>
+    <form method="POST" action="{{ url_for('reset') }}" style="display:inline;">
+        <button type="submit">Reset</button>
+    </form>
+    {% if word_list_str %}
+        <div>
+            <p><strong>All Words: </strong>{{ word_list_str }}</p>
+        </div>
+    {% endif %}
+    {% if error_message %}
+        <div class="error">{{ error_message }}</div>
+    {% endif %}
+    {% if winner %}
+        <div style="color: green; font-weight: bold; margin-top: 20px;">
+            🎉 Congratulations! The word is: {{ result }} 🎉
+        </div>
+    {% elif result %}
+        <p><strong>Filtered Words:</strong> {{ result }}</p>
+    {% endif %}
+</body>
+</html>
