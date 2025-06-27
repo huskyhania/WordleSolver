@@ -35,57 +35,60 @@ except Exception as e:
 safe = list("00000")
 correct = random.choice(words) if words else "crane"  # fallback word
 tries = 0
+print_grey = ""
 
-# Display the correct word in a label (for testing, you can hide later)
+# Labels
 label_correct = tk.Label(root, text=correct, fg="white", bg="black", width=20, height=2)
 label_correct.pack()
 
-# Label to show the random guesses
 label_guess = tk.Label(root, text="", fg="black", bg="red", width=20, height=2)
 label_guess.pack()
 
-frame = tk.Frame(master=root, width=400, height=150)
+label_grey = tk.Label(root, text="", fg="black", bg="grey", width=20, height=2)
+label_grey.pack()
+
+frame = tk.Frame(master=root,bg="white", width=240, height=150)
 frame.pack()
 
+#greens
 label_green1 = tk.Label(master=frame, text="", fg="black", bg="green", width=2, height=2)
 label_green1.place(x=10, y=10)
 label_green2 = tk.Label(master=frame, text="", fg="black", bg="green", width=2, height=2)
-label_green2.place(x=50, y=10)
+label_green2.place(x=58, y=10)
 label_green3 = tk.Label(master=frame, text="", fg="black", bg="green", width=2, height=2)
-label_green3.place(x=100, y=10)
+label_green3.place(x=106, y=10)
 label_green4 = tk.Label(master=frame, text="", fg="black", bg="green", width=2, height=2)
-label_green4.place(x=150, y=10)
+label_green4.place(x=154, y=10)
 label_green5 = tk.Label(master=frame, text="", fg="black", bg="green", width=2, height=2)
-label_green5.place(x=200, y=10)
+label_green5.place(x=202, y=10)
 #yellows
 label_yellow1 = tk.Label(master=frame, text="", fg="black", bg="yellow", width=2, height=2)
-label_yellow1.place(x=10, y=100)
+label_yellow1.place(x=10, y=90)
 label_yellow2 = tk.Label(master=frame, text="", fg="black", bg="yellow", width=2, height=2)
-label_yellow2.place(x=50, y=100)
+label_yellow2.place(x=58, y=90)
 label_yellow3 = tk.Label(master=frame, text="", fg="black", bg="yellow", width=2, height=2)
-label_yellow3.place(x=100, y=100)
+label_yellow3.place(x=106, y=90)
 label_yellow4 = tk.Label(master=frame, text="", fg="black", bg="yellow", width=2, height=2)
-label_yellow4.place(x=150, y=100)
+label_yellow4.place(x=154, y=90)
 label_yellow5 = tk.Label(master=frame, text="", fg="black", bg="yellow", width=2, height=2)
-label_yellow5.place(x=200, y=100)
-#abel_guess.pack()
+label_yellow5.place(x=202, y=90)
 
-# Label to show messages (like "You win!")
-
-# label_message = tk.Label(root, text="", fg="green", bg="white", width=1, height=1)
-# label_message.pack()
-
+#List
 label_list = tk.Label(root, text="", fg="black", bg="white", width=300, height=200)
 label_list.pack()
 
 def make_guess(event=None):
-    global tries, words, safe
+    global tries, words, safe, print_grey
+    tries += 1
+    if tries == 7:
+        label_list.config(text=f"YOU LOSE")
+        root.unbind("<Key>")  # LoL you lost
+        return
 
     if len(words) == 0:
         label_message.config(text="No words to guess from!")
         return
 
-    tries += 1
     print(f"Try #{tries}")
 
     random_guess = random.choice(words)
@@ -100,7 +103,6 @@ def make_guess(event=None):
             green_str[i] = random_guess[i]
             label_green[i].config(text=f"{random_guess[i]}")
     green = "".join(green_str)
-    print("Green str:", green)
 
     if green == correct:
         label_list.config(text=f"{win}")
@@ -116,19 +118,22 @@ def make_guess(event=None):
                 yellow_str[x] = random_guess[x]
                 label_yellow[i].config(text=f"{random_guess[i]}")
     yellow = "".join(yellow_str)
-    print("Yellow str:", yellow)
 
     # Grey logic
     grey = ""
     for ch in random_guess:
         if ch not in correct:
             grey += ch
-    print("Grey str:", grey)
+    for ch in grey:
+        if ch not in print_grey:
+            print_grey = print_grey + ch 
+    label_grey.config(text=f"{print_grey}")
+
+    #Checking the guess
 
     for i, letter in enumerate(green):
         if letter != '0':
             safe[i] = letter
-
     confirmed_letters = set([c for c in green if c != '0'] + [c for c in yellow if c != '0'])
 
     true_greys = [c for c in grey if c not in confirmed_letters]
@@ -157,9 +162,6 @@ def make_guess(event=None):
         root.unbind("<Key>")
         return
 
-    print("\nPossible guesses:")
-    print(" | ".join(filtered))
-
     words = filtered
     result = []
     for i, word in enumerate(filtered,1):
@@ -168,12 +170,8 @@ def make_guess(event=None):
     for i in range(0, len(result), 15):
         chunk = result[i:i+15]
         lines.append(" ".join(chunk))
-
     final_str = "\n".join(lines)
-
     label_list.config(text=f"Possible guesses:\n{final_str}")
 
-# Bind key press event to call make_guess
 root.bind("<Key>", make_guess)
-
 root.mainloop()
